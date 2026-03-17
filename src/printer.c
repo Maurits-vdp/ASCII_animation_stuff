@@ -1,4 +1,34 @@
 #include "printer.h"
+#ifndef SQUISH_Y
+    float squish_factor = 0.5;
+#else
+    float squish_factor = 1;
+#endif
+
+
+void DrawVertices(ImageBuffer* image, Vec4* vertices, int* indices){
+    int numIndices = 6; //Will this work?
+    //Iterate per triangle to draw
+    for (int triaIndex=0; triaIndex<(numIndices/3); triaIndex++){
+        //probably a better way to do this
+        int triangleIndices[3] = {indices[triaIndex*3], indices[triaIndex*3 + 1], indices[triaIndex*3 + 2]}; 
+        
+        for (int i=0; i<3; i++){
+            int iNext = (i+1)%3;
+            int index = triangleIndices[i];
+            int indexNext = triangleIndices[iNext];
+            
+            Vec2 pointStart = {
+                .vec = {vertices[index].vec[0], squish_factor*vertices[index].vec[1]} //multiplying by 0.5 to stop squishing
+            };
+            Vec2 pointFinish = {
+                .vec = {vertices[indexNext].vec[0], squish_factor*vertices[indexNext].vec[1]}
+            };
+
+            InsertBrensenhamLine(&pointStart, &pointFinish, image);
+        }
+    }
+}
 
 //https://www.geeksforgeeks.org/dsa/bresenhams-line-generation-algorithm/
 //https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm

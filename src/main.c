@@ -3,6 +3,9 @@
 #include <math.h>
 #include "printer.h"
 #define PI 3.1415926535
+#define SQUISH_Y
+#define WIDTH 50
+#define HEIGHT 25 //Must be half of width for a square aspect ratio if SQUISH_Y is defined
 
 void PrintImage(ImageBuffer* pImageBuf){
     char* pBuffer = calloc((pImageBuf->cols+1)*pImageBuf->rows + 1, sizeof(char));
@@ -22,69 +25,79 @@ void PrintImage(ImageBuffer* pImageBuf){
 
 int main(){
     ImageBuffer image = {
-        .cols = 30,
-        .rows = 30,
+        .cols = WIDTH,
+        .rows = HEIGHT,
         .pImage = calloc(image.cols*image.rows, sizeof(char)),
     };
 
-    int radius = 10;
-    Vec2 initPoint = {
-        .vec = {0,15 - radius}
-    };
-    Vec2 radPoint = {
-        .vec = {0, 15 + radius}
+    //Vertices defined from [-0.5, 0.5] for all axes
+    size_t nVertices;
+    Vec4 vertList[4] = {
+        {0.5, 0.5, -0.5, 0},
+        {0.5, -0.5, -0.5 , 0},
+        {-0.5, -0.5, -0.5 , 0},
+        {-0.5, 0.5, -0.5, 0}
     };
 
-    ClearImageBuffer(&image);
-    InsertBrensenhamLine(&initPoint, &radPoint, &image);
-    PrintImage(&image);
+    int indices[6] = {0, 1, 3, 3, 2, 1}; //6 move instructions,
+    //Optimise by removing duplicate instructions? (see: .. , 1, 3, 3, ...) 
+    //Change to Vec2* array to store pointers to vertices?    
+
+    /* All this is commented for future reference
+    Mat4x4 model; CreateMat4x4(&model, 1); Model matrix is for rotating the model
+    Mat4x4 view; CreateMat4x4(&view, 1);
+    Vec4 transVec = {0,0,0,0};
+    Translate(&view, &transVec);
+    //V_{clip} = M_{projection} * M_{view} * M_{model} * V_{Local}
+    //Translate and scale each vertex into the screen domain
+    //M_{model}
+    */
 
     double tElapsed = 0;
     double dt;
-    double fOmega = 4*(2*PI/10);
+
+    double angfreq = 2*PI/(2);
     double theta = 0;
+    double radius = 20;
+
+    Vec4 testList[4] = {
+        {20 + radius*cos(theta), 20 + radius*sin(theta)},
+        {20 + radius*cos(theta+PI/2), 20 + radius*sin(theta+PI/2)},
+        {20 + radius*cos(theta+PI), 20 + radius*sin(theta+PI)},
+        {20 + radius*cos(theta+3*PI/2), 20 + radius*sin(theta+3*PI/2)}
+    };
+    int testIndices[6] = {0, 3, 2, 2, 1, 0};
+
+    ClearImageBuffer(&image);
+    DrawVertices(&image, testList, testIndices);
+    PrintImage(&image);
 
     clock_t t0 = clock();
-    while (tElapsed < 10){
+    while (tElapsed < 20){
         clock_t tNow = clock();
         dt = (double) (tNow - t0)/(CLOCKS_PER_SEC);
-        theta += fOmega * dt;
 
-        radPoint.vec[0] = 15 + (int) radius*cos(theta);
-        radPoint.vec[1] = 15 + (int) radius*sin(theta);
+        theta += angfreq *dt;
 
-        initPoint.vec[0] = 15 - (int) radius*cos(theta);
-        initPoint.vec[1] = 15 - (int) radius*sin(theta);
+        //Could be improved but I can't be asked right now
+        testList[0].vec[0] = 20 + radius*cos(theta);
+        testList[0].vec[1] = 20 + radius*sin(theta);
+
+        testList[1].vec[0] = 20 + radius*cos(theta+PI/2);
+        testList[1].vec[1] = 20 + radius*sin(theta+PI/2);
+
+        testList[2].vec[0] = 20 + radius*cos(theta+PI);
+        testList[2].vec[1] = 20 + radius*sin(theta+PI);
+
+        testList[3].vec[0] = 20 + radius*cos(theta+3*PI/2);
+        testList[3].vec[1] = 20 + radius*sin(theta+3*PI/2);
 
         ClearImageBuffer(&image);
-        InsertBrensenhamLine(&initPoint, &radPoint, &image);
+        DrawVertices(&image, testList, testIndices);
         PrintImage(&image);
-
+        
         tElapsed += dt;
         t0 = tNow;
     }
-
-    Sleep(500);
     return 0;
 }
-
-    /*
-   Vec2 point1 = {
-    .vec = {0, 0}
-   };
-   Vec2 point2 = {
-    .vec = {20, 20}
-   };
-   Vec2 pointA = {
-    .vec = {20,0}
-   };
-   Vec2 pointB = {
-    .vec = {0,20}
-   };
-   Vec2 pH1 = {
-    .vec = {5, 10}
-   };
-   Vec2 pH2 = {
-    .vec = {5, 5}
-   };
-   */

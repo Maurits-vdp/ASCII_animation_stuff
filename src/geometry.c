@@ -40,7 +40,7 @@ void VecMatrixProduct(const Mat4x4 *matL, Vec4 *vecR){
 
 void Translate(Mat4x4 *mat, const Vec4 *vTrans){
     Mat4x4 transMat; 
-    Create4x4Mat(&transMat, 1.0f);
+    CreateMat4x4(&transMat, 1.0f);
     for (size_t i=0; i<4; i++){
         transMat.mat[i][3]=vTrans->vec[i];
     }
@@ -49,7 +49,7 @@ void Translate(Mat4x4 *mat, const Vec4 *vTrans){
 
 void Scale(Mat4x4 *mat, const Vec4 *vScale){
     Mat4x4 scaleMat;
-    Create4x4Mat(&scaleMat, 1.0f);
+    CreateMat4x4(&scaleMat, 1.0f);
     for (size_t i=0; i<4; i++){
         scaleMat.mat[i][i]=vScale->vec[i];
     }
@@ -87,11 +87,30 @@ void OrthoProj(Mat4x4* matrix, float xMax, float xMin, float yMax, float yMin, f
 }
 
 //https://johannesugb.github.io/gpu-programming/setting-up-a-proper-vulkan-projection-matrix/
-void PerspectiveMat(Mat4x4* matrix, float aspectRatio, float far, float near){
-    matrix->mat[0][0]=1/(aspectRatio*tan(FOV));
-    matrix->mat[1][1]=1/(tan(FOV));
-    matrix->mat[2][2]=far/(far-near);
-    matrix->mat[2][3]=-(near*far)/(far-near);
-    matrix->mat[3][2]=1;
-    matrix->mat[3][3]=0;
+//https://www.songho.ca/opengl/gl_projectionmatrix.html
+void VFOVPerspectiveProj(Mat4x4* matrix, float vertFOV, float aspectRatio, float front, float back){
+    float tanTheta = tan(vertFOV/2);
+    float top = front*tanTheta;
+    float right = top * aspectRatio;
+
+    CreateMat4x4(matrix, 0);
+    matrix->mat[0][0] = front/right;
+    matrix->mat[1][1] = front/top;
+    matrix->mat[2][2] = -(back+front)/(back-front);
+    matrix->mat[2][3] = -1;
+    matrix->mat[3][2] = -(2*back*front)/(back-front);
+    matrix->mat[3][3] = 0;
+};
+
+void SymInfPerspectiveProj(Mat4x4* matrix, float near, float width, float height){
+    float r = width/2;
+    float t = height/2;
+
+    CreateMat4x4(matrix, 0);
+    matrix->mat[0][0] = near/r;
+    matrix->mat[1][1] = near/t;
+    matrix->mat[2][2] = -1;
+    matrix->mat[2][3] = -2*near;
+    matrix->mat[3][2] = -1;
+    matrix->mat[0][0] = 0;
 }
