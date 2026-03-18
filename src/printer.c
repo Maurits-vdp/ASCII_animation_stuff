@@ -1,4 +1,5 @@
 #include "printer.h"
+#include <Windows.h>
 #ifndef SQUISH_Y
     float squish_factor = 0.5;
 #else
@@ -22,15 +23,14 @@ void PrintImage(ImageBuffer* pImageBuf){
     free(pBuffer);
 }
 
-void DrawVertices(ImageBuffer* image, Vec4* vertices, int* indices){
-    int numIndices = 6; //Will this work?
+void DrawVertices(ImageBuffer* image, Vec4* vertices, int* indices, int numIndices){
     //Iterate per triangle to draw
     for (int triaIndex=0; triaIndex<(numIndices/3); triaIndex++){
         //probably a better way to do this
         int triangleIndices[3] = {indices[triaIndex*3], indices[triaIndex*3 + 1], indices[triaIndex*3 + 2]}; 
         
-        for (int i=0; i<3; i++){
-            int iNext = (i+1)%3;
+        for (int i=0; i<2; i++){
+            int iNext = (i+1);
             int index = triangleIndices[i];
             int indexNext = triangleIndices[iNext];
             
@@ -41,7 +41,10 @@ void DrawVertices(ImageBuffer* image, Vec4* vertices, int* indices){
                 .vec = {vertices[indexNext].vec[0], squish_factor*vertices[indexNext].vec[1]}
             };
 
+            //printf("Drawing indices: (%i, %i), for triangle number: %i", indices[triaIndex*3], indices[triaIndex*3+1], triaIndex);
+            //Sleep(2000);
             InsertBrensenhamLine(&pointStart, &pointFinish, image, '#');
+            //PrintImage(image);
         }
     }
 }

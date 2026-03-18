@@ -1,3 +1,5 @@
+#ifndef GEOMETRY_H
+#define GEOMETRY_H
 typedef struct {
     float vec[2];
 } Vec2;
@@ -39,3 +41,5 @@ void SymInfPerspectiveProj(Mat4x4* matrix, float near, float width, float height
 //Screen transform
 void ConvertClipToNDC(Vec4* vector);
 void ViewportTransform(Vec4* vector, float width, float height);
+
+#endif
