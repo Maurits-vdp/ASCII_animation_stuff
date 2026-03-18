@@ -10,5 +10,6 @@ typedef struct {
 } ImageBuffer;
 
 void DrawVertices(ImageBuffer* image, Vec4* vertices, int* indices);
-void InsertBrensenhamLine(Vec2* pPointI, Vec2* pPointF, ImageBuffer* image);
+void InsertBrensenhamLine(Vec2* pPointI, Vec2* pPointF, ImageBuffer* image, char character);
 void ClearImageBuffer(ImageBuffer* buffer);
+void PrintImage(ImageBuffer* pImageBuf);

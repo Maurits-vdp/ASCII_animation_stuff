@@ -5,6 +5,22 @@
     float squish_factor = 1;
 #endif
 
+void PrintImage(ImageBuffer* pImageBuf){
+    printf("\033[H");
+    char* pBuffer = calloc((pImageBuf->cols+1)*pImageBuf->rows + 1, sizeof(char));
+    char* pString = pBuffer;
+    for (int row=pImageBuf->rows-1; row >= 0; row--){ // reversed order to flip Y axis
+        for (int col=0; col<pImageBuf->cols; col++){
+            *pString = pImageBuf->pImage[row*pImageBuf->cols + col];
+            pString++;
+        }
+        *pString = '\n';
+        pString++;
+    }
+    *pString = '\0';
+    printf("%s", pBuffer);
+    free(pBuffer);
+}
 
 void DrawVertices(ImageBuffer* image, Vec4* vertices, int* indices){
     int numIndices = 6; //Will this work?
@@ -25,14 +41,14 @@ void DrawVertices(ImageBuffer* image, Vec4* vertices, int* indices){
                 .vec = {vertices[indexNext].vec[0], squish_factor*vertices[indexNext].vec[1]}
             };
 
-            InsertBrensenhamLine(&pointStart, &pointFinish, image);
+            InsertBrensenhamLine(&pointStart, &pointFinish, image, '#');
         }
     }
 }
 
 //https://www.geeksforgeeks.org/dsa/bresenhams-line-generation-algorithm/
 //https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
-void InsertBrensenhamLine(Vec2* pPointI, Vec2* pPointF, ImageBuffer* image){
+void InsertBrensenhamLine(Vec2* pPointI, Vec2* pPointF, ImageBuffer* image, char character){
     //Points should be in screen domain from x: [0, width], y: [0, height]
     int cols = image->cols;
     int xf = pPointF->vec[0]; int xi = pPointI->vec[0];
@@ -47,12 +63,12 @@ void InsertBrensenhamLine(Vec2* pPointI, Vec2* pPointF, ImageBuffer* image){
 
     int i = 0;
     do {
-        image->pImage[cols*(yi+i*dirY) + (xi+i*dirX)] = '#';
+        image->pImage[cols*(yi+i*dirY) + (xi+i*dirX)] = character;
         i++;
     } while (i < abs(err)*(((bool)deltaX) ^ ((bool)deltaY)));
 
     while (deltaX && deltaY){
-        image->pImage[cols*yi + xi] = '#';
+        image->pImage[cols*yi + xi] = character;
         int e2 = 2 * err;
         if (e2 >= deltaY){
             if (xi == xf) break;
