@@ -1,10 +1,4 @@
 #include "printer.h"
-#include <Windows.h>
-#ifndef SQUISH_Y
-    float squish_factor = 0.5;
-#else
-    float squish_factor = 1;
-#endif
 
 void PrintImage(ImageBuffer* pImageBuf){
     printf("\033[H");
@@ -29,16 +23,16 @@ void DrawVertices(ImageBuffer* image, Vec4* vertices, int* indices, int numIndic
         //probably a better way to do this
         int triangleIndices[3] = {indices[triaIndex*3], indices[triaIndex*3 + 1], indices[triaIndex*3 + 2]}; 
         
-        for (int i=0; i<2; i++){
-            int iNext = (i+1);
+        for (int i=0; i<(2+DIAGS_ENABLED); i++){
+            int iNext = (i+1)%3;
             int index = triangleIndices[i];
             int indexNext = triangleIndices[iNext];
             
             Vec2 pointStart = {
-                .vec = {vertices[index].vec[0], squish_factor*vertices[index].vec[1]} //multiplying by 0.5 to stop squishing
+                .vec = {vertices[index].vec[0], SQUISH_FACTOR*vertices[index].vec[1]} //multiplying by 0.5 to stop squishing
             };
             Vec2 pointFinish = {
-                .vec = {vertices[indexNext].vec[0], squish_factor*vertices[indexNext].vec[1]}
+                .vec = {vertices[indexNext].vec[0], SQUISH_FACTOR*vertices[indexNext].vec[1]}
             };
 
             //printf("Drawing indices: (%i, %i), for triangle number: %i", indices[triaIndex*3], indices[triaIndex*3+1], triaIndex);

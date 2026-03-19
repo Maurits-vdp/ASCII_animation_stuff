@@ -1,3 +1,5 @@
+
+
 #include <Windows.h>
 #include <time.h>
 #include <math.h>
@@ -5,7 +7,7 @@
 #include "basic_shapes.h"
 
 #define PI 3.1415926535
-#define SQUISH_Y
+
 #define WIDTH 200
 #define HEIGHT 100 //Must be half of width for a square aspect ratio if SQUISH_Y is defined
 #define DegToRad(theta) theta*(PI)/180
@@ -42,33 +44,6 @@ int main(){
     //Vertices defined from [-1, 1] for all axes although setting to [-0.5, 0.5 is what I like]
     Shape cubeCopy;
     CopyReferenceShape(&cubeCopy, CUBE);
-
-    /*
-    int numVertices = 8;
-    Vec4 cubeList[] = {
-        {0.5, 0.5, 0.5, 1.0},
-        {0.5, 0.5, -0.5 , 1.0}, 
-        {0.5, -0.5, 0.5 , 1.0},
-        {0.5, -0.5, -0.5, 1.0},
-
-        {-0.5, 0.5, 0.5, 1.0},
-        {-0.5, 0.5, -0.5 , 1.0}, 
-        {-0.5, -0.5, 0.5 , 1.0},
-        {-0.5, -0.5, -0.5, 1.0}
-    };
-
-    int indices[] = {
-        0, 1, 3, 3, 2, 0, //xmax plane
-        4, 5, 7, 7, 6, 4, //xmin plane
-
-        0, 4, 5, 5, 1, 0, //ymax plane
-        2, 6, 7, 7, 3, 2, //ymin plane
-
-        0, 4, 6, 6, 2, 0, //zmax plane
-        1, 5, 7, 7, 3, 1, //zmin plane
-
-    };
-    */
 
     double angfreq = 2*PI/(2);
     double theta = 0;

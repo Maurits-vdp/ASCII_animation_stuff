@@ -1,0 +1,2 @@
+#define SQUISH_Y
+#define ENABLE_DIAGONALS
