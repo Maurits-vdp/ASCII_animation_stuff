@@ -8,9 +8,7 @@ Remember to do this from the ASCII_animation_stuff directory
 #include "debug_tests.h"
 
 int main(){
-    PreviewShape(PLANE);
-    PreviewShape(EQUIL_TRIANGLE);
-    PreviewShape(CUBE);
+    PreviewShape(EQUIL_PYRAMID);
 }
 
 #endif
