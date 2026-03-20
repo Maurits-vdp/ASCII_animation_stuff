@@ -31,6 +31,8 @@ void PreviewShape(enum ReferenceShapes shapeID){
 
     //Vertices defined from [-1, 1] for all axes although setting to [-0.5, 0.5 is what I like]
     Shape shapeCopy;
+    shapeCopy.mVertices = malloc(GetShapeVertMallocSize(shapeID));
+    shapeCopy.mIndices = malloc(GetShapeIndexMallocSize(shapeID));
     CopyReferenceShape(&shapeCopy, shapeID);
 
     double angfreq = 2*PI/(2);
@@ -117,6 +119,8 @@ void PreviewShape(enum ReferenceShapes shapeID){
     }
     free(vertList);
     free(image.pImage);
+    free(shapeCopy.mIndices);
+    free(shapeCopy.mVertices);
 
     KillScreen();
     return;
